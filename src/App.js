@@ -48,7 +48,42 @@ function VerticalStepper({ steps, currentStep, stepWork }) {
   );
 }
 
+// Define the labels for the progress steps
+const progressSteps = [
+  'Creating UserAgents',
+  'UserAgents performing tasks',
+  'Surveying UserAgents',
+  'Generating insights',
+  'Done',
+];
+
+// Update the Gemini API call function
+async function callGeminiAPI(prompt) {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.REACT_APP_GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: prompt }]
+        }]
+      })
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`API call failed: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.candidates[0].content.parts[0].text;
+}
+
 function App() {
+  // Track if we've started a study yet
   const [studyStarted, setStudyStarted] = useState(false);
   const [studyGoal, setStudyGoal] = useState('');
   const [studyCriteria, setStudyCriteria] = useState('');
@@ -56,13 +91,27 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [currentStep, setCurrentStep] = useState(-1);
 
-  const progressSteps = [
-    'Creating UserAgents',
-    'UserAgents performing tasks',
-    'Surveying UserAgents',
-    'Generating insights',
-    'Done',
-  ];
+  // Add dummy feedback conversations for each agent
+  const [agentFeedback] = useState({
+    'UXUser1': [
+      { role: 'interviewer', text: "How was your experience with the medicine cart process?" },
+      { role: 'agent', text: "The cart process was quite confusing. I couldn't easily find where to adjust quantities, and the 'Add to Cart' button wasn't very visible on mobile." },
+      { role: 'interviewer', text: "What specific difficulties did you face?" },
+      { role: 'agent', text: "The main issues were: 1) The cart icon was too small, 2) Price breakdowns weren't clear, and 3) I wasn't sure if my medicine was actually added to cart due to lack of confirmation." }
+    ],
+    'UXUser2': [
+      { role: 'interviewer', text: "Could you walk me through your experience?" },
+      { role: 'agent', text: "Sure. I found the medicine search easy, but the checkout process was frustrating. The payment options were limited for my region in Rajasthan." },
+      { role: 'interviewer', text: "What would have made it better?" },
+      { role: 'agent', text: "Having UPI payment options prominently displayed and supporting local payment methods would help. Also, the delivery time estimates weren't clear for my pin code." }
+    ],
+    'UXUser3': [
+      { role: 'interviewer', text: "What was your overall impression of the cart experience?" },
+      { role: 'agent', text: "The language was a barrier. Everything was in English, and I would have preferred Hindi options. Also, the prescription upload process wasn't intuitive." },
+      { role: 'interviewer', text: "Any other accessibility concerns?" },
+      { role: 'agent', text: "Yes, the text size was too small, and the color contrast made it hard to read prices and medicine details." }
+    ]
+  });
 
   const stepWork = [
     `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
@@ -88,23 +137,40 @@ function App() {
 
   useEffect(() => {
     if (studyStarted && currentStep >= 0 && currentStep < progressSteps.length - 1) {
-      const timer = setTimeout(() => {
+      const timer = setTimeout(async () => {
         setCurrentStep((prev) => prev + 1);
-
+        
         switch (currentStep) {
           case 0:
-            addAgentMessage(`Step 1 completed. Moving to task performance...`);
+            addAgentMessage(`I'm creating ${numAgents} diverse UXUser agents now...`);
             break;
           case 1:
-            addAgentMessage(`Step 2 completed. Proceeding to survey agents...`);
+            addAgentMessage(`All ${numAgents} agents are performing the tasks. Screen recordings are in progress...`);
             break;
           case 2:
-            addAgentMessage(`Step 3 completed. Generating insights now...`);
+            // Enhanced survey message with actual feedback
+            addAgentMessage(
+              `Surveying all ${numAgents} UserAgents to gather feedback...\n\n` +
+              `Here's what they said:\n\n` +
+              Object.entries(agentFeedback).map(([agent, conversation]) => 
+                `${agent}: "${conversation[1].text}"`
+              ).join('\n\n')
+            );
             break;
           case 3:
-            addAgentMessage(
-              `Here are some actionable insights:\n1. Cart flow is confusing due to unclear button placement.\n2. Layout elements hamper checkout on smaller screens.\n3. Error feedback is insufficient, lacking clear guidance.\n\nLet me know if you'd like more details or want to tag any @UXUser directly.`
-            );
+            try {
+              const feedbackSummary = Object.entries(agentFeedback)
+                .map(([agent, conversation]) => 
+                  `${agent}'s feedback:\n${conversation.map(msg => `${msg.role}: ${msg.text}`).join('\n')}`
+                ).join('\n\n');
+
+              const prompt = `As a UX expert, analyze this user feedback and provide key insights:\n\n${feedbackSummary}`;
+              const response = await callGeminiAPI(prompt);
+              addAgentMessage(response);
+            } catch (error) {
+              console.error('Error generating insights:', error);
+              addAgentMessage('Sorry, I encountered an error while generating insights. Please try again.');
+            }
             break;
           default:
             break;
@@ -112,14 +178,14 @@ function App() {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [studyStarted, currentStep, progressSteps.length, numAgents]);
+  }, [studyStarted, currentStep, progressSteps.length, numAgents, agentFeedback]);
 
   const addAgentMessage = (text) => {
     setMessages((prev) => [...prev, { sender: 'agent', text }]);
   };
 
   const [currentUserMessage, setCurrentUserMessage] = useState('');
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!currentUserMessage.trim()) return;
 
@@ -128,18 +194,33 @@ function App() {
     const userInput = currentUserMessage;
     setCurrentUserMessage('');
 
-    setTimeout(() => {
-      const userAgentMention = userInput.match(/@UXUser\d+/);
+    try {
+      const userAgentMention = userInput.match(/@(UXUser[123])/);
       if (userAgentMention) {
-        addAgentMessage(
-          `${userAgentMention} says: "I encountered an issue with the layout on mobile, making it hard to find the checkout button."`
-        );
+        const agentId = userAgentMention[1];
+        const feedback = agentFeedback[agentId];
+        if (feedback) {
+          const agentContext = feedback.map(msg => `${msg.role}: ${msg.text}`).join('\n');
+          const prompt = `Context - Conversation with ${agentId}:\n${agentContext}\n\nUser question: ${userInput}\n\nProvide a detailed response as ${agentId}, maintaining consistency with the previous responses.`;
+          
+          const response = await callGeminiAPI(prompt);
+          addAgentMessage(`${agentId} responds: ${response}`);
+        }
       } else {
-        addAgentMessage(
-          `UXAgent here: Thanks for your message! Let me know if you want more details or want to chat with a specific @UXUser.`
-        );
+        const feedbackContext = Object.entries(agentFeedback)
+          .map(([agent, conversation]) => 
+            `${agent}'s feedback:\n${conversation.map(msg => `${msg.role}: ${msg.text}`).join('\n')}`
+          ).join('\n\n');
+
+        const prompt = `Context - User feedback from a UX study:\n${feedbackContext}\n\nUser question: ${userInput}\n\nProvide a detailed response addressing the user's question based on the feedback data.`;
+        
+        const response = await callGeminiAPI(prompt);
+        addAgentMessage(response);
       }
-    }, 800);
+    } catch (error) {
+      console.error('Error generating response:', error);
+      addAgentMessage('Sorry, I encountered an error while processing your request. Please try again.');
+    }
   };
 
   return (
