@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-function VerticalStepper({ steps, currentStep, onStepClick, stepWork }) {
+function VerticalStepper({ steps, currentStep, stepWork }) {
   return (
     <div className="stepper-container">
       {steps.map((step, index) => (
         <div
           className={`stepper-step ${index <= currentStep ? 'active' : ''}`}
           key={index}
-          onClick={() => onStepClick(index)}
         >
           <div className="stepper-icon">{index + 1}</div>
           <div className="stepper-content">
@@ -36,7 +35,6 @@ function App() {
   const [numAgents, setNumAgents] = useState(3);
   const [messages, setMessages] = useState([]);
   const [currentStep, setCurrentStep] = useState(-1);
-  const [selectedStep, setSelectedStep] = useState(null);
 
   const progressSteps = [
     'Creating UserAgents',
@@ -47,11 +45,11 @@ function App() {
   ];
 
   const stepWork = [
-    `Creating ${numAgents} diverse UXUser agents...`,
-    `All ${numAgents} agents are performing tasks and recording screens...`,
-    `Surveying ${numAgents} UserAgents for feedback...`,
-    'Generating actionable insights from the study...',
-    'Study completed! Review the insights.',
+    `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
+    `All ${numAgents} agents are performing tasks, recording screens, and logging interactions...`,
+    `Surveying ${numAgents} UserAgents for detailed feedback on usability and experience...`,
+    'Generating actionable insights from the study, analyzing patterns and anomalies...',
+    'Study completed! All data processed and insights ready for review.',
   ];
 
   const handleStartStudy = (e) => {
@@ -60,7 +58,6 @@ function App() {
 
     setStudyStarted(true);
     setCurrentStep(0);
-    setSelectedStep(0);
 
     const firstAgentMsg = {
       sender: 'agent',
@@ -73,23 +70,20 @@ function App() {
     if (studyStarted && currentStep >= 0 && currentStep < progressSteps.length - 1) {
       const timer = setTimeout(() => {
         setCurrentStep((prev) => prev + 1);
-        setSelectedStep((prev) => prev + 1);
 
         switch (currentStep) {
           case 0:
-            addAgentMessage(`I'm creating ${numAgents} diverse UXUser agents now...`);
+            addAgentMessage(`Step 1 completed. Moving to task performance...`);
             break;
           case 1:
-            addAgentMessage(
-              `All ${numAgents} agents are performing the tasks. Screen recordings are in progress...`
-            );
+            addAgentMessage(`Step 2 completed. Proceeding to survey agents...`);
             break;
           case 2:
-            addAgentMessage(`Surveying all ${numAgents} UserAgents to gather feedback...`);
+            addAgentMessage(`Step 3 completed. Generating insights now...`);
             break;
           case 3:
             addAgentMessage(
-              `Here are some actionable insights:\n1. Cart flow is confusing.\n2. Layout elements hamper checkout.\n3. Error feedback is insufficient.\n\nLet me know if you'd like more details or want to tag any @UXUser directly.`
+              `Here are some actionable insights:\n1. Cart flow is confusing due to unclear button placement.\n2. Layout elements hamper checkout on smaller screens.\n3. Error feedback is insufficient, lacking clear guidance.\n\nLet me know if you'd like more details or want to tag any @UXUser directly.`
             );
             break;
           default:
@@ -102,20 +96,6 @@ function App() {
 
   const addAgentMessage = (text) => {
     setMessages((prev) => [...prev, { sender: 'agent', text }]);
-  };
-
-  const handleStepClick = (stepIndex) => {
-    setSelectedStep(stepIndex);
-    if (stepIndex <= currentStep) {
-      const stepMessages = {
-        0: `I'm creating ${numAgents} diverse UXUser agents now...`,
-        1: `All ${numAgents} agents are performing the tasks. Screen recordings are in progress...`,
-        2: `Surveying all ${numAgents} UserAgents to gather feedback...`,
-        3: `Here are some actionable insights:\n1. Cart flow is confusing.\n2. Layout elements hamper checkout.\n3. Error feedback is insufficient.`,
-        4: 'Study completed! All insights have been generated.',
-      };
-      setMessages([{ sender: 'agent', text: stepMessages[stepIndex] }]);
-    }
   };
 
   const [currentUserMessage, setCurrentUserMessage] = useState('');
@@ -183,23 +163,30 @@ function App() {
       ) : (
         <div className="chat-container">
           <div className="chat-section">
-            <div className="stepper-and-messages">
-              <VerticalStepper
-                steps={progressSteps}
-                currentStep={currentStep}
-                onStepClick={handleStepClick}
-                stepWork={stepWork}
-              />
-              <div className="messages-container">
-                {messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`message-bubble ${msg.sender === 'user' ? 'user-bubble' : 'agent-bubble'}`}
-                  >
-                    <p>{msg.text}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="messages-container">
+              {messages.length > 0 && (
+                <div className={`message-bubble agent-bubble`}>
+                  <p>{messages[0].text}</p>
+                </div>
+              )}
+              {studyStarted && currentStep >= 0 && (
+                <div className="embedded-stepper">
+                  <h3>Study Progress</h3>
+                  <VerticalStepper
+                    steps={progressSteps}
+                    currentStep={currentStep}
+                    stepWork={stepWork}
+                  />
+                </div>
+              )}
+              {messages.slice(1).map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`message-bubble ${msg.sender === 'user' ? 'user-bubble' : 'agent-bubble'}`}
+                >
+                  <p>{msg.text}</p>
+                </div>
+              ))}
             </div>
 
             <form onSubmit={handleSendMessage} className="chat-input-form">
