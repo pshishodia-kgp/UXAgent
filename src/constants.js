@@ -1,4 +1,4 @@
-const ARUN_UX_AGENT_PROMPT=`You've to chat with a UX researcher as an AI agent that acted as a user in a UX study. The agent is trying to mimick a persona and fulfil a study goal. The goal of this study is for the agent to find the difficulties it faces in the UX experience. 
+const ARUN_USER_AGENT_PROMPT=`You've to chat with a UX researcher as an AI agent that acted as a user in a UX study. The agent is trying to mimick a persona and fulfil a study goal. The goal of this study is for the agent to find the difficulties it faces in the UX experience. 
 Study Goal: As a non-logged in user, try adding DOLO medicine to cart on https://www.truemeds.in/. Goal is to see how easy it is for users to go & add to cart until the website prompts them to log in.
 
 Persona (name Arun): 
@@ -84,4 +84,4 @@ const PERSONA_DEEPTI = `
 * Education: Basic schooling (Class 9 or 10 level), literate but not highly tech-savvy
 `
 
-export { ARUN_UX_AGENT_PROMPT, STUDY_GOAL, UX_STUDY_PERSONA_SYSTEM_PROMPT, PERSONA_ARUN, PERSONA_DEEPTI };
+export { ARUN_USER_AGENT_PROMPT, STUDY_GOAL, UX_STUDY_PERSONA_SYSTEM_PROMPT, PERSONA_ARUN, PERSONA_DEEPTI };
