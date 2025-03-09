@@ -2,52 +2,46 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 /**
- * A horizontal step-based progress bar.
+ * A vertical step-based progress timeline with progress bars for in-progress steps.
  * @param {object} props
  * @param {string[]} props.steps - The labels for each step.
  * @param {number} props.currentStep - Zero-based index of the current step.
  */
-function ProgressBar({ steps, currentStep }) {
+function VerticalStepper({ steps, currentStep }) {
   return (
-    <div className="progress-container">
-      {steps.map((step, index) => {
-        const stepClass = index <= currentStep ? 'progress-step active' : 'progress-step';
-        return (
-          <div className={stepClass} key={index}>
-            <div className="progress-icon">{index + 1}</div>
-            <div className="progress-label">{step}</div>
-            {index < steps.length - 1 && (
-              <div className={`progress-line ${index < currentStep ? 'active-line' : ''}`}></div>
+    <div className="stepper-container">
+      {steps.map((step, index) => (
+        <div
+          className={`stepper-step ${index <= currentStep ? 'active' : ''}`}
+          key={index}
+        >
+          <div className="stepper-icon">{index + 1}</div>
+          <div className="stepper-content">
+            <div className="stepper-label">{step}</div>
+            {/* Show progress bar only when this is the current step */}
+            {index === currentStep && (
+              <div className="stepper-progress-bar">
+                <div className="stepper-progress-fill"></div>
+              </div>
             )}
           </div>
-        );
-      })}
+          {index < steps.length - 1 && (
+            <div className={`stepper-line ${index < currentStep ? 'active-line' : ''}`}></div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
 
 function App() {
-  // Track if we’ve started a study yet
   const [studyStarted, setStudyStarted] = useState(false);
-
-  // Basic fields for the study
   const [studyGoal, setStudyGoal] = useState('');
   const [studyCriteria, setStudyCriteria] = useState('');
   const [numAgents, setNumAgents] = useState(3);
-
-  // Chat history: an array of message objects { sender: 'user'|'agent', text: string }
   const [messages, setMessages] = useState([]);
-
-  // Step-based progress: 0 to steps.length - 1
-  // Steps:
-  //   0: Creating UserAgents
-  //   1: UserAgents performing tasks
-  //   2: Surveying UserAgents
-  //   3: Generating insights
-  //   4: Done
   const [currentStep, setCurrentStep] = useState(-1);
 
-  // Define the labels for the progress steps
   const progressSteps = [
     'Creating UserAgents',
     'UserAgents performing tasks',
@@ -56,7 +50,6 @@ function App() {
     'Done',
   ];
 
-  // Handle starting the study
   const handleStartStudy = (e) => {
     e.preventDefault();
     if (!studyGoal.trim() || !studyCriteria.trim()) return;
@@ -64,7 +57,6 @@ function App() {
     setStudyStarted(true);
     setCurrentStep(0);
 
-    // Initialize chat with an "agent" message summarizing the request
     const firstAgentMsg = {
       sender: 'agent',
       text: `Understood! You want to run a UX study on:\n\n"${studyGoal}"\n\nCriteria:\n${studyCriteria}\n\nNumber of agents: ${numAgents}.\nI'll start right away!`,
@@ -72,20 +64,14 @@ function App() {
     setMessages([firstAgentMsg]);
   };
 
-  // Simulate each phase using timeouts. In production, replace these with real events/callbacks.
   useEffect(() => {
     if (studyStarted && currentStep >= 0 && currentStep < progressSteps.length - 1) {
-      // Move to the next step after some delay
       const timer = setTimeout(() => {
-        // Advance the step
         setCurrentStep((prev) => prev + 1);
 
-        // Also add a chat message for each step
         switch (currentStep) {
           case 0:
-            addAgentMessage(
-              `I'm creating ${numAgents} diverse UXUser agents now...`
-            );
+            addAgentMessage(`I'm creating ${numAgents} diverse UXUser agents now...`);
             break;
           case 1:
             addAgentMessage(
@@ -93,9 +79,7 @@ function App() {
             );
             break;
           case 2:
-            addAgentMessage(
-              `Surveying all ${numAgents} UserAgents to gather feedback...`
-            );
+            addAgentMessage(`Surveying all ${numAgents} UserAgents to gather feedback...`);
             break;
           case 3:
             addAgentMessage(
@@ -105,38 +89,32 @@ function App() {
           default:
             break;
         }
-      }, 2000);
+      }, 2000); // Matches the animation duration for smooth transition
       return () => clearTimeout(timer);
     }
   }, [studyStarted, currentStep, progressSteps.length, numAgents]);
 
-  // Function to add a new agent message to the chat
   const addAgentMessage = (text) => {
     setMessages((prev) => [...prev, { sender: 'agent', text }]);
   };
 
-  // Handle user sending a message
   const [currentUserMessage, setCurrentUserMessage] = useState('');
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (!currentUserMessage.trim()) return;
 
-    // Add user message to chat
     const newMsg = { sender: 'user', text: currentUserMessage };
     setMessages((prev) => [...prev, newMsg]);
-    const userInput = currentUserMessage; // capture before resetting
+    const userInput = currentUserMessage;
     setCurrentUserMessage('');
 
-    // Simulate an immediate “UXAgent” reply (in real life, call an LLM backend)
     setTimeout(() => {
-      // If user mentions “@UXUserX,” we simulate a user agent response
       const userAgentMention = userInput.match(/@UXUser\d+/);
       if (userAgentMention) {
         addAgentMessage(
           `${userAgentMention} says: "I encountered an issue with the layout on mobile, making it hard to find the checkout button."`
         );
       } else {
-        // Generic fallback reply
         addAgentMessage(
           `UXAgent here: Thanks for your message! Let me know if you want more details or want to chat with a specific @UXUser.`
         );
@@ -150,7 +128,6 @@ function App() {
         <h1>UX Study Chat</h1>
       </div>
 
-      {/* If study not started, show setup form. Otherwise, show progress bar + chat. */}
       {!studyStarted ? (
         <div className="setup-form">
           <h2>Set Up Your UX Study</h2>
@@ -185,10 +162,8 @@ function App() {
         </div>
       ) : (
         <div className="chat-container">
-          {/* PROGRESS BAR */}
-          <ProgressBar steps={progressSteps} currentStep={currentStep} />
+          <VerticalStepper steps={progressSteps} currentStep={currentStep} />
 
-          {/* CHAT MESSAGES */}
           <div className="chat-section">
             <div className="messages-container">
               {messages.map((msg, idx) => (
@@ -201,7 +176,6 @@ function App() {
               ))}
             </div>
 
-            {/* USER INPUT */}
             <form onSubmit={handleSendMessage} className="chat-input-form">
               <input
                 type="text"
