@@ -95,48 +95,38 @@ async function callGeminiAPI(prompt) {
 }
 
 function App() {
-  // Track if we've started a study yet
   const [studyStarted, setStudyStarted] = useState(false);
   const [studyGoal, setStudyGoal] = useState('');
   const [studyCriteria, setStudyCriteria] = useState('');
   const [numAgents, setNumAgents] = useState(3);
   const [messages, setMessages] = useState([]);
   const [currentStep, setCurrentStep] = useState(-1);
-
-  // Add dummy feedback conversations for each agent
+  const [stepWork, setStepWork] = useState([]); // Initialize as empty array
+  
+  // Move agentFeedback state declaration here, before the useEffect
   const [agentFeedback] = useState({
     'UXUser1': [
       { role: 'interviewer', text: "How was your experience with the medicine cart process?" },
       { role: 'agent', text: "The cart process was quite confusing. I couldn't easily find where to adjust quantities, and the 'Add to Cart' button wasn't very visible on mobile." },
       { role: 'interviewer', text: "What specific difficulties did you face?" },
       { role: 'agent', text: "The main issues were: 1) The cart icon was too small, 2) Price breakdowns weren't clear, and 3) I wasn't sure if my medicine was actually added to cart due to lack of confirmation." }
-    ],
-    'UXUser2': [
-      { role: 'interviewer', text: "Could you walk me through your experience?" },
-      { role: 'agent', text: "Sure. I found the medicine search easy, but the checkout process was frustrating. The payment options were limited for my region in Rajasthan." },
-      { role: 'interviewer', text: "What would have made it better?" },
-      { role: 'agent', text: "Having UPI payment options prominently displayed and supporting local payment methods would help. Also, the delivery time estimates weren't clear for my pin code." }
-    ],
-    'UXUser3': [
-      { role: 'interviewer', text: "What was your overall impression of the cart experience?" },
-      { role: 'agent', text: "The language was a barrier. Everything was in English, and I would have preferred Hindi options. Also, the prescription upload process wasn't intuitive." },
-      { role: 'interviewer', text: "Any other accessibility concerns?" },
-      { role: 'agent', text: "Yes, the text size was too small, and the color contrast made it hard to read prices and medicine details." }
     ]
   });
 
-  // Add stepWork as state
-  const [stepWork, setStepWork] = useState([
-    `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
-    `All ${numAgents} agents are performing tasks, recording screens, and logging interactions...`,
-    `Surveying all ${numAgents} UserAgents to gather feedback...<br /><br />` +
-    `Here's what they said:<br /><br />` +
-    Object.entries(agentFeedback).map(([agent, conversation]) => 
-      `${agent}: "${conversation[1].text}"`
-    ).join('<br /><br />'),
-    'Generating actionable insights from the study, analyzing patterns and anomalies...',
-    'Study completed! All data processed and insights ready for review.',
-  ]);
+  // Now the useEffect can access agentFeedback
+  useEffect(() => {
+    setStepWork([
+      `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
+      `All ${numAgents} agents are performing tasks, recording screens, and logging interactions...`,
+      `Surveying all ${numAgents} UserAgents to gather feedback...<br /><br />` +
+      `Here's what they said:<br /><br />` +
+      Object.entries(agentFeedback).map(([agent, conversation]) => 
+        `${agent}: "${conversation[1].text}"`
+      ).join('<br /><br />'),
+      'Generating actionable insights from the study, analyzing patterns and anomalies...',
+      'Study completed! All data processed and insights ready for review.',
+    ]);
+  }, [numAgents, agentFeedback]);
 
   const handleStartStudy = (e) => {
     e.preventDefault();

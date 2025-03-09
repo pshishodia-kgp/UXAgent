@@ -66,7 +66,7 @@ Here's a detailed transcript of the AI agent's UX study, acting as Arun, a 15-ye
 The website was mostly easy to use for finding the medicine. But the "Add to Cart" process with the popup was confusing. The biggest issue was the login popup, which had no way to close it, making it impossible to continue without logging in. This would be very frustrating for someone who just wants to browse and add items to their cart before deciding to create an account. The website assumes all users want to register/login.
 `
 
-const STUDY_GOAL=`Study Goal: As a non-logged in user, try adding DOLO medicine to cart on https://www.truemeds.in/. Goal is to see how easy it is for users to go & add to cart until the website prompts them to log in.`
+const STUDY_GOAL=`As a non-logged in user, try adding DOLO medicine to cart on https://www.truemeds.in/. Goal is to see how easy it is for users to go & add to cart until the website prompts them to log in.`
 const UX_STUDY_PERSONA_SYSTEM_PROMPT=`You are an AI agent simulating the behavior of user based on the following persona details. Your task is to interact with user interfaces (UI) as this persona would, completing assigned UX research tasks while identifying areas of difficulty, confusion, or non-intuitive design. Your goal is to mimic how this user would naturally approach technology, highlighting bad UI designs by documenting where you struggle, where you succeed after a single retry, and what feels unintuitive.
 Persona Details:`
 
