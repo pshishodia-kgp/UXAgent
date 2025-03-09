@@ -42,7 +42,9 @@ function VerticalStepper({ steps, currentStep, stepWork }) {
           {selectedStep !== null ? (
             <div className="stepper-work-container">
               <h4>{steps[selectedStep]}</h4>
-              <div className="stepper-work">{stepWork[selectedStep]}</div>
+              <div className="stepper-work" 
+                dangerouslySetInnerHTML={{ __html: stepWork[selectedStep] }}>
+              </div>
             </div>
           ) : (
             currentStep >= 0 && (
@@ -123,13 +125,18 @@ function App() {
     ]
   });
 
-  const stepWork = [
+  // Add stepWork as state
+  const [stepWork, setStepWork] = useState([
     `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
     `All ${numAgents} agents are performing tasks, recording screens, and logging interactions...`,
-    `Surveying ${numAgents} UserAgents for detailed feedback on usability and experience...`,
+    `Surveying all ${numAgents} UserAgents to gather feedback...<br /><br />` +
+    `Here's what they said:<br /><br />` +
+    Object.entries(agentFeedback).map(([agent, conversation]) => 
+      `${agent}: "${conversation[1].text}"`
+    ).join('<br /><br />'),
     'Generating actionable insights from the study, analyzing patterns and anomalies...',
     'Study completed! All data processed and insights ready for review.',
-  ];
+  ]);
 
   const handleStartStudy = (e) => {
     e.preventDefault();
@@ -151,41 +158,40 @@ function App() {
       const timer = setTimeout(async () => {
         setCurrentStep((prev) => prev + 1);
         
-    //     switch (currentStep) {
-    //       case 0:
-    //         addAgentMessage(`I'm creating ${numAgents} diverse UXUser agents now...`);
-    //         break;
-    //       case 1:
-    //         addAgentMessage(`All ${numAgents} agents are performing the tasks. Screen recordings are in progress...`);
-    //         break;
-    //       case 2:
-    //         // Enhanced survey message with actual feedback
-    //         addAgentMessage(
-    //           `Surveying all ${numAgents} UserAgents to gather feedback...\n\n` +
-    //           `Here's what they said:\n\n` +
-    //           Object.entries(agentFeedback).map(([agent, conversation]) => 
-    //             `${agent}: "${conversation[1].text}"`
-    //           ).join('\n\n')
-    //         );
-    //         break;
-    //       case 3:
-    //         try {
-    //           const feedbackSummary = Object.entries(agentFeedback)
-    //             .map(([agent, conversation]) => 
-    //               `${agent}'s feedback:\n${conversation.map(msg => `${msg.role}: ${msg.text}`).join('\n')}`
-    //             ).join('\n\n');
+        switch (currentStep) {
+          case 0:
+            break;
+          case 1:
+            break;
+          case 2:
+            break;
+          case 3:
+            try {
+              const feedbackSummary = Object.entries(agentFeedback)
+                .map(([agent, conversation]) => 
+                  `${agent}'s feedback:\n${conversation.map(msg => `${msg.role}: ${msg.text}`).join('\n')}`
+                ).join('\n\n');
 
-    //           const prompt = `As a UX expert, analyze this user feedback and provide key insights:\n\n${feedbackSummary}`;
-    //           const response = await callGeminiAPI(prompt);
-    //           addAgentMessage(response);
-    //         } catch (error) {
-    //           console.error('Error generating insights:', error);
-    //           addAgentMessage('Sorry, I encountered an error while generating insights. Please try again.');
-    //         }
-    //         break;
-    //       default:
-    //         break;
-    //     }
+              const prompt = `As a UX expert, analyze this user feedback and provide key insights in 100 words:\n\n${feedbackSummary}`;
+              const response = await callGeminiAPI(prompt);
+              // Update stepWork using setState
+              setStepWork(prev => {
+                const newStepWork = [...prev];
+                newStepWork[3] = response.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                return newStepWork;
+              });
+            } catch (error) {
+              console.error('Error generating insights:', error);
+              setStepWork(prev => {
+                const newStepWork = [...prev];
+                newStepWork[3] = 'Sorry, I encountered an error while generating insights. Please try again.';
+                return newStepWork;
+              });
+            }
+            break;
+          default:
+            break;
+        }
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -212,10 +218,10 @@ function App() {
         const feedback = agentFeedback[agentId];
         if (feedback) {
           const agentContext = feedback.map(msg => `${msg.role}: ${msg.text}`).join('\n');
-          const prompt = `Context - Conversation with ${agentId}:\n${agentContext}\n\nUser question: ${userInput}\n\nProvide a detailed response as ${agentId}, maintaining consistency with the previous responses.`;
+          const prompt = `Context - Conversation with ${agentId}:\n${agentContext}\n\nUser question: ${userInput}\n\nProvide a brief response as ${agentId} within 75 words, maintaining consistency with the previous responses.`;
           
           const response = await callGeminiAPI(prompt);
-          addAgentMessage(`${agentId} responds: ${response}`);
+          addAgentMessage(`**${agentId}:**\n${response}`);
         }
       } else {
         const feedbackContext = Object.entries(agentFeedback)
@@ -223,10 +229,10 @@ function App() {
             `${agent}'s feedback:\n${conversation.map(msg => `${msg.role}: ${msg.text}`).join('\n')}`
           ).join('\n\n');
 
-        const prompt = `Context - User feedback from a UX study:\n${feedbackContext}\n\nUser question: ${userInput}\n\nProvide a detailed response addressing the user's question based on the feedback data.`;
+        const prompt = `Context - User feedback from a UX study:\n${feedbackContext}\n\nUser question: ${userInput}\n\nProvide a brief response addressing the user's question based on the feedback data within 75 words.`;
         
         const response = await callGeminiAPI(prompt);
-        addAgentMessage(response);
+        addAgentMessage(`**UX agent:**\n${response}`);
       }
     } catch (error) {
       console.error('Error generating response:', error);
@@ -296,7 +302,7 @@ function App() {
                   key={idx}
                   className={`message-bubble ${msg.sender === 'user' ? 'user-bubble' : 'agent-bubble'}`}
                 >
-                  <p>{msg.text}</p>
+                  <p dangerouslySetInnerHTML={{ __html: msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                 </div>
               ))}
             </div>
