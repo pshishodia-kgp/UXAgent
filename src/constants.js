@@ -85,4 +85,10 @@ const PERSONA_DEEPTI = `
 * Education: Basic schooling (Class 9 or 10 level), literate but not highly tech-savvy
 `
 
-export { ARUN_USER_AGENT_PROMPT, STUDY_GOAL, UX_STUDY_PERSONA_SYSTEM_PROMPT, PERSONA_ARUN, PERSONA_DEEPTI , INSIGHT};
+const STUDY_CRITERIA = `* Age: Between 15 and 30 years old. 
+* Geography: Tier2 / Tier3 Towns. 
+* Country: India
+* Education: Basic schooling (Class 9 or 10 level), literate but not highly tech-savvy
+`
+
+export { ARUN_USER_AGENT_PROMPT, STUDY_GOAL, STUDY_CRITERIA, UX_STUDY_PERSONA_SYSTEM_PROMPT, PERSONA_ARUN, PERSONA_DEEPTI , INSIGHT};

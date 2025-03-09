@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-import { ARUN_UX_AGENT_PROMPT, INSIGHT } from './constants';
+import { ARUN_UX_AGENT_PROMPT, INSIGHT , STUDY_CRITERIA, STUDY_GOAL} from './constants';
 
 
 function VerticalStepper({ steps, currentStep, stepWork }) {
@@ -96,8 +96,8 @@ async function callGeminiAPI(prompt) {
 
 function App() {
   const [studyStarted, setStudyStarted] = useState(false);
-  const [studyGoal, setStudyGoal] = useState('');
-  const [studyCriteria, setStudyCriteria] = useState('');
+  const [studyGoal, setStudyGoal] = useState(STUDY_GOAL);
+  const [studyCriteria, setStudyCriteria] = useState(STUDY_CRITERIA);
   const [numAgents, setNumAgents] = useState(3);
   const [messages, setMessages] = useState([]);
   const [currentStep, setCurrentStep] = useState(-1);
@@ -285,20 +285,29 @@ function App() {
           <h2>Set Up Your UX Study</h2>
           <form onSubmit={handleStartStudy}>
             <label>Study Goal:</label>
-            <input
-              type="text"
+            <textarea
               value={studyGoal}
               onChange={(e) => setStudyGoal(e.target.value)}
-              placeholder="e.g. Add a medicine to cart in https://www.truemeds.in/"
+              placeholder={studyGoal}
               required
+              style={{ height: 'auto' }}
+              onInput={(e) => {
+                e.target.style.height = 'auto';
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
             />
 
             <label>People Criteria:</label>
             <textarea
               value={studyCriteria}
               onChange={(e) => setStudyCriteria(e.target.value)}
-              placeholder="e.g. People in tier2 towns in Rajasthan from low financial backgrounds"
+              placeholder={studyCriteria}
               required
+              style={{ height: '250px' }}
+              onInput={(e) => {
+                e.target.style.height = '100px';
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
             />
 
             <label>Number of Agents:</label>
@@ -346,7 +355,7 @@ function App() {
                 type="text"
                 value={currentUserMessage}
                 onChange={(e) => setCurrentUserMessage(e.target.value)}
-                placeholder="Type your message... (mention @UXUser1, etc.)"
+                placeholder="Type your message... (mention users to ask questions to specific users @Arun etc.)"
               />
               <button type="submit">Send</button>
             </form>
