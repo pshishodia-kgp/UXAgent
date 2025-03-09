@@ -115,7 +115,8 @@ function App() {
     ]
   });
 
-  const stepWork = [
+  // Add stepWork as state
+  const [stepWork, setStepWork] = useState([
     `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
     `All ${numAgents} agents are performing tasks, recording screens, and logging interactions...`,
     `Surveying all ${numAgents} UserAgents to gather feedback...<br /><br />` +
@@ -125,7 +126,7 @@ function App() {
     ).join('<br /><br />'),
     'Generating actionable insights from the study, analyzing patterns and anomalies...',
     'Study completed! All data processed and insights ready for review.',
-  ];
+  ]);
 
   const handleStartStudy = (e) => {
     e.preventDefault();
@@ -160,13 +161,21 @@ function App() {
                   `${agent}'s feedback:\n${conversation.map(msg => `${msg.role}: ${msg.text}`).join('\n')}`
                 ).join('\n\n');
 
-              const prompt = `As a UX expert, analyze this user feedback and provide key insights:\n\n${feedbackSummary}`;
+              const prompt = `As a UX expert, analyze this user feedback and provide key insights in 100 words:\n\n${feedbackSummary}`;
               const response = await callGeminiAPI(prompt);
-              // Update the final step work with the insights
-              stepWork[4] = `${response}`;
+              // Update stepWork using setState
+              setStepWork(prev => {
+                const newStepWork = [...prev];
+                newStepWork[3] = response.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                return newStepWork;
+              });
             } catch (error) {
               console.error('Error generating insights:', error);
-              stepWork[4] = 'Sorry, I encountered an error while generating insights. Please try again.';
+              setStepWork(prev => {
+                const newStepWork = [...prev];
+                newStepWork[3] = 'Sorry, I encountered an error while generating insights. Please try again.';
+                return newStepWork;
+              });
             }
             break;
           default:
