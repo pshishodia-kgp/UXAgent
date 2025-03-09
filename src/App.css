@@ -1,0 +1,189 @@
+/* Global Reset & Font */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Open Sans', Arial, sans-serif;
+  background-color: #f1f3f5;
+}
+
+/* Main Wrapper */
+.app-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Header Bar */
+.header-bar {
+  background-color: #2b6777;
+  color: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.header-bar h1 {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Setup Form */
+.setup-form {
+  background: #fff;
+  padding: 1rem 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+.setup-form h2 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+.setup-form label {
+  display: block;
+  margin: 0.5rem 0 0.25rem;
+  font-weight: 500;
+}
+.setup-form input[type="text"],
+.setup-form input[type="number"],
+.setup-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.setup-form button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  background-color: #2b6777;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.setup-form button:hover {
+  background-color: #22525c;
+}
+
+/* Chat Container */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Progress Bar */
+.progress-container {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+}
+.progress-step {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0.5rem 1rem;
+  flex-shrink: 0; /* so it won't compress in small screens */
+}
+.progress-step:not(:last-child) {
+  margin-right: 1rem;
+}
+.progress-step .progress-icon {
+  width: 32px;
+  height: 32px;
+  background: #ccc;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.progress-step .progress-label {
+  margin-left: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+.progress-step.active .progress-icon {
+  background: #2b6777;
+}
+.progress-step.active .progress-label {
+  color: #2b6777;
+}
+.progress-line {
+  width: 40px;
+  height: 4px;
+  background: #ccc;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 2px;
+}
+.progress-line.active-line {
+  background: #2b6777;
+}
+
+/* Chat Section */
+.chat-section {
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+/* Messages Container */
+.messages-container {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #fafafa;
+}
+.message-bubble {
+  max-width: 70%;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  line-height: 1.4;
+  white-space: pre-wrap; /* preserves line breaks in text */
+}
+.user-bubble {
+  background: #d1f5d3;
+  align-self: flex-end;
+}
+.agent-bubble {
+  background: #eee;
+  align-self: flex-start;
+}
+
+/* Chat Input Form */
+.chat-input-form {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+.chat-input-form input[type="text"] {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+.chat-input-form button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #2b6777;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+.chat-input-form button:hover {
+  background: #22525c;
+}

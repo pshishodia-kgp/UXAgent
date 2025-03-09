@@ -1,0 +1,17 @@
+/* Basic resets and styling */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  a {
+    color: blue;
+    text-decoration: none;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
