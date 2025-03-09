@@ -1,149 +1,168 @@
 /* Global Reset & Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
-  font-family: 'Open Sans', Arial, sans-serif;
-  background-color: #f1f3f5;
+  font-family: 'Inter', sans-serif;
+  background-color: #f4f7fc;
+  color: #1f2a44;
 }
 
 /* Main Wrapper */
 .app-wrapper {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1rem;
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
 /* Header Bar */
 .header-bar {
-  background-color: #2b6777;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   color: #ffffff;
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 .header-bar h1 {
-  margin: 0;
-  font-weight: 600;
+  font-size: 1.75rem;
+  font-weight: 700;
 }
 
 /* Setup Form */
 .setup-form {
-  background: #fff;
-  padding: 1rem 1.5rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 .setup-form h2 {
-  margin-bottom: 1rem;
+  font-size: 1.5rem;
   font-weight: 600;
+  color: #1f2a44;
+  margin-bottom: 1.5rem;
 }
 .setup-form label {
   display: block;
-  margin: 0.5rem 0 0.25rem;
+  margin: 0.75rem 0 0.25rem;
   font-weight: 500;
+  color: #4b5563;
 }
 .setup-form input[type="text"],
 .setup-form input[type="number"],
 .setup-form textarea {
   width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fafafa;
+  transition: border-color 0.2s ease;
+}
+.setup-form input:focus,
+.setup-form textarea:focus {
+  border-color: #4f46e5;
+  outline: none;
+}
+.setup-form textarea {
+  min-height: 100px;
 }
 .setup-form button {
-  padding: 0.6rem 1.2rem;
+  padding: 0.75rem 1.5rem;
   border: none;
-  background-color: #2b6777;
+  background: #4f46e5;
   color: #fff;
   font-weight: 600;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 .setup-form button:hover {
-  background-color: #22525c;
+  background: #4338ca;
 }
 
 /* Chat Container */
 .chat-container {
   display: flex;
-  flex-direction: row;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 /* Vertical Stepper */
 .stepper-container {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  width: 300px; /* Increased width to accommodate progress bar */
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  width: 320px;
   height: fit-content;
 }
 .stepper-step {
   display: flex;
-  align-items: flex-start; /* Align items to top for progress bar */
+  align-items: flex-start;
   position: relative;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
 }
 .stepper-icon {
-  width: 32px;
-  height: 32px;
-  background: #ccc;
+  width: 36px;
+  height: 36px;
+  background: #e5e7eb;
   border-radius: 50%;
-  color: #fff;
+  color: #6b7280;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 .stepper-content {
-  margin-left: 0.75rem;
+  margin-left: 1rem;
   flex: 1;
 }
 .stepper-label {
   font-weight: 500;
-  color: #555;
+  color: #6b7280;
 }
 .stepper-step.active .stepper-icon {
-  background: #2b6777;
+  background: #4f46e5;
+  color: #ffffff;
 }
 .stepper-step.active .stepper-label {
-  color: #2b6777;
+  color: #1f2a44;
 }
 .stepper-line {
-  width: 4px;
-  height: 20px;
-  background: #ccc;
-  margin-left: 14px; /* Align with center of icon */
-  border-radius: 2px;
+  width: 2px;
+  height: 24px;
+  background: #e5e7eb;
+  margin-left: 17px;
+  border-radius: 1px;
 }
 .stepper-line.active-line {
-  background: #2b6777;
+  background: #4f46e5;
 }
 
 /* Progress Bar Styles */
 .stepper-progress-bar {
   width: 100%;
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  margin-top: 0.25rem;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  margin-top: 0.5rem;
   overflow: hidden;
 }
 .stepper-progress-fill {
   height: 100%;
-  background: #2b6777;
-  border-radius: 4px;
-  width: 0; /* Start at 0% */
-  animation: progress 2s linear forwards; /* Matches useEffect timeout duration */
+  background: #4f46e5;
+  border-radius: 3px;
+  width: 0;
+  animation: progress 2s ease-in-out forwards;
 }
 @keyframes progress {
   from {
@@ -159,57 +178,67 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  height: 60vh;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
+  height: 70vh;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 
 /* Messages Container */
 .messages-container {
   flex: 1;
-  padding: 1rem;
+  padding: 1.5rem;
   overflow-y: auto;
-  background: #fafafa;
+  background: #ffffff;
 }
 .message-bubble {
-  max-width: 70%;
-  margin-bottom: 0.75rem;
-  padding: 0.6rem 0.75rem;
-  border-radius: 8px;
-  line-height: 1.4;
+  max-width: 75%;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  line-height: 1.5;
   white-space: pre-wrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 .user-bubble {
-  background: #d1f5d3;
-  align-self: flex-end;
+  background: #4f46e5;
+  color: #ffffff;
+  margin-left: auto;
 }
 .agent-bubble {
-  background: #eee;
-  align-self: flex-start;
+  background: #f1f5f9;
+  color: #1f2a44;
+  margin-right: auto;
 }
 
 /* Chat Input Form */
 .chat-input-form {
   display: flex;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 0.5rem;
 }
 .chat-input-form input[type="text"] {
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: none;
   outline: none;
   font-size: 1rem;
+  background: #f1f5f9;
+  border-radius: 8px;
+  margin-right: 0.5rem;
 }
 .chat-input-form button {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   border: none;
-  background: #2b6777;
+  background: #4f46e5;
   color: #fff;
   font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 .chat-input-form button:hover {
-  background: #22525c;
+  background: #4338ca;
 }
