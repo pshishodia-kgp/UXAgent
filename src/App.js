@@ -136,8 +136,8 @@ function App() {
     setCurrentStep(0);
 
     const firstAgentMsg = {
-      sender: 'agent',
-      text: `Understood! You want to run a UX study on:\n\n"${studyGoal}"\n\nCriteria:\n${studyCriteria}\n\nNumber of agents: ${numAgents}.\nI'll start right away!`,
+      sender: 'user',
+      text: `Hey, I want to run a UX study with the following specifications: \n\nStudy Goal: ${studyGoal}\n\nCriteria:${studyCriteria}\n\nNumber of agents: ${numAgents}.\n`,
     };
     setMessages([firstAgentMsg]);
   };
@@ -234,7 +234,7 @@ function App() {
   return (
     <div className="app-wrapper">
       <div className="header-bar">
-        <h1>UX Study Chat</h1>
+        <h1>InsightsBot</h1>
       </div>
 
       {!studyStarted ? (
@@ -274,7 +274,7 @@ function App() {
           <div className="chat-section">
             <div className="messages-container">
               {messages.length > 0 && (
-                <div className={`message-bubble agent-bubble`}>
+                <div className={`message-bubble ${messages[0].sender === 'user' ? 'user-bubble' : 'agent-bubble'}`}>
                   <p>{messages[0].text}</p>
                 </div>
               )}
