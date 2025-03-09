@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
+import { ARUN_UX_AGENT_PROMPT } from './constants';
+
+
 function VerticalStepper({ steps, currentStep, stepWork }) {
   const [selectedStep, setSelectedStep] = useState(null); // State to track the clicked step
 
