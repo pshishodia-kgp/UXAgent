@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-/**
- * A vertical step-based progress timeline with progress bars for in-progress steps.
- * @param {object} props
- * @param {string[]} props.steps - The labels for each step.
- * @param {number} props.currentStep - Zero-based index of the current step.
- */
-function VerticalStepper({ steps, currentStep }) {
+function VerticalStepper({ steps, currentStep, onStepClick, stepWork }) {
   return (
     <div className="stepper-container">
       {steps.map((step, index) => (
         <div
           className={`stepper-step ${index <= currentStep ? 'active' : ''}`}
           key={index}
+          onClick={() => onStepClick(index)}
         >
           <div className="stepper-icon">{index + 1}</div>
           <div className="stepper-content">
             <div className="stepper-label">{step}</div>
-            {/* Show progress bar only when this is the current step */}
+            <div className="stepper-work">{stepWork[index]}</div>
             {index === currentStep && (
               <div className="stepper-progress-bar">
                 <div className="stepper-progress-fill"></div>
@@ -41,6 +36,7 @@ function App() {
   const [numAgents, setNumAgents] = useState(3);
   const [messages, setMessages] = useState([]);
   const [currentStep, setCurrentStep] = useState(-1);
+  const [selectedStep, setSelectedStep] = useState(null);
 
   const progressSteps = [
     'Creating UserAgents',
@@ -50,12 +46,21 @@ function App() {
     'Done',
   ];
 
+  const stepWork = [
+    `Creating ${numAgents} diverse UXUser agents...`,
+    `All ${numAgents} agents are performing tasks and recording screens...`,
+    `Surveying ${numAgents} UserAgents for feedback...`,
+    'Generating actionable insights from the study...',
+    'Study completed! Review the insights.',
+  ];
+
   const handleStartStudy = (e) => {
     e.preventDefault();
     if (!studyGoal.trim() || !studyCriteria.trim()) return;
 
     setStudyStarted(true);
     setCurrentStep(0);
+    setSelectedStep(0);
 
     const firstAgentMsg = {
       sender: 'agent',
@@ -68,6 +73,7 @@ function App() {
     if (studyStarted && currentStep >= 0 && currentStep < progressSteps.length - 1) {
       const timer = setTimeout(() => {
         setCurrentStep((prev) => prev + 1);
+        setSelectedStep((prev) => prev + 1);
 
         switch (currentStep) {
           case 0:
@@ -89,13 +95,27 @@ function App() {
           default:
             break;
         }
-      }, 2000); // Matches the animation duration for smooth transition
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [studyStarted, currentStep, progressSteps.length, numAgents]);
 
   const addAgentMessage = (text) => {
     setMessages((prev) => [...prev, { sender: 'agent', text }]);
+  };
+
+  const handleStepClick = (stepIndex) => {
+    setSelectedStep(stepIndex);
+    if (stepIndex <= currentStep) {
+      const stepMessages = {
+        0: `I'm creating ${numAgents} diverse UXUser agents now...`,
+        1: `All ${numAgents} agents are performing the tasks. Screen recordings are in progress...`,
+        2: `Surveying all ${numAgents} UserAgents to gather feedback...`,
+        3: `Here are some actionable insights:\n1. Cart flow is confusing.\n2. Layout elements hamper checkout.\n3. Error feedback is insufficient.`,
+        4: 'Study completed! All insights have been generated.',
+      };
+      setMessages([{ sender: 'agent', text: stepMessages[stepIndex] }]);
+    }
   };
 
   const [currentUserMessage, setCurrentUserMessage] = useState('');
@@ -162,18 +182,24 @@ function App() {
         </div>
       ) : (
         <div className="chat-container">
-          <VerticalStepper steps={progressSteps} currentStep={currentStep} />
-
           <div className="chat-section">
-            <div className="messages-container">
-              {messages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`message-bubble ${msg.sender === 'user' ? 'user-bubble' : 'agent-bubble'}`}
-                >
-                  <p>{msg.text}</p>
-                </div>
-              ))}
+            <div className="stepper-and-messages">
+              <VerticalStepper
+                steps={progressSteps}
+                currentStep={currentStep}
+                onStepClick={handleStepClick}
+                stepWork={stepWork}
+              />
+              <div className="messages-container">
+                {messages.map((msg, idx) => (
+                  <div
+                    key={idx}
+                    className={`message-bubble ${msg.sender === 'user' ? 'user-bubble' : 'agent-bubble'}`}
+                  >
+                    <p>{msg.text}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <form onSubmit={handleSendMessage} className="chat-input-form">

@@ -91,23 +91,44 @@ body {
 /* Chat Container */
 .chat-container {
   display: flex;
-  gap: 1.5rem;
+  flex-direction: column;
+}
+
+/* Chat Section */
+.chat-section {
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* Stepper and Messages Container */
+.stepper-and-messages {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
 /* Vertical Stepper */
 .stepper-container {
-  background: #ffffff;
+  background: #f9fafb;
   padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  width: 320px;
-  height: fit-content;
+  width: 350px;
+  overflow-y: auto;
 }
 .stepper-step {
   display: flex;
   align-items: flex-start;
   position: relative;
   padding: 0.75rem 0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.stepper-step:hover {
+  background: #eef2ff;
 }
 .stepper-icon {
   width: 36px;
@@ -129,6 +150,11 @@ body {
 .stepper-label {
   font-weight: 500;
   color: #6b7280;
+}
+.stepper-work {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-top: 0.25rem;
 }
 .stepper-step.active .stepper-icon {
   background: #4f46e5;
@@ -171,18 +197,6 @@ body {
   to {
     width: 100%;
   }
-}
-
-/* Chat Section */
-.chat-section {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 70vh;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
 }
 
 /* Messages Container */
