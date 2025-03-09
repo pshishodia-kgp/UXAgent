@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-import { ARUN_UX_AGENT_PROMPT } from './constants';
+import { ARUN_UX_AGENT_PROMPT, INSIGHT } from './constants';
 
 
 function VerticalStepper({ steps, currentStep, stepWork }) {
@@ -105,28 +105,71 @@ function App() {
   
   // Move agentFeedback state declaration here, before the useEffect
   const [agentFeedback] = useState({
-    'UXUser1': [
-      { role: 'interviewer', text: "How was your experience with the medicine cart process?" },
-      { role: 'agent', text: "The cart process was quite confusing. I couldn't easily find where to adjust quantities, and the 'Add to Cart' button wasn't very visible on mobile." },
-      { role: 'interviewer', text: "What specific difficulties did you face?" },
-      { role: 'agent', text: "The main issues were: 1) The cart icon was too small, 2) Price breakdowns weren't clear, and 3) I wasn't sure if my medicine was actually added to cart due to lack of confirmation." }
+    "UXUser1": [
+      { "role": "interviewer", "text": "Can you walk me through your experience navigating the TrueMeds website?" },
+      { "role": "agent", "text": "Sure. I opened the website on Firefox and tried searching for 'DOLO' using the search bar. At first, it seemed straightforward, but then I faced some issues." },
+      { "role": "interviewer", "text": "What issues did you encounter during the search process?" },
+      { "role": "agent", "text": "Whenever I typed 'DOLO,' the search suggestions kept replacing what I typed, making it hard to select the right option. I had to be extra careful when clicking to ensure I got the correct item." },
+      { "role": "interviewer", "text": "That sounds frustrating. Once you found the product, how was your experience adding it to the cart?" },
+      { "role": "agent", "text": "It wasn't very smooth. I clicked 'Add to Cart,' but a 'Compare and Choose' popup appeared, showing a cheaper alternative. While I liked the suggestion, I just wanted to buy DOLO, so I ignored it and tried adding it to the cart." },
+      { "role": "interviewer", "text": "Did you face any difficulties within the 'Compare and Choose' popup?" },
+      { "role": "agent", "text": "Yes. The quantity selection wasn't very clear. I noticed a checkbox next to it, but it wasn't working properly. I clicked 'Add to Cart' multiple times, but nothing happened." },
+      { "role": "interviewer", "text": "How did you eventually resolve the issue?" },
+      { "role": "agent", "text": "I got frustrated and closed the popup. Then, I went back to the main product page and clicked 'Add to Cart' again, and this time it worked. A badge appeared on the cart icon, confirming the addition." },
+      { "role": "interviewer", "text": "Once the item was in your cart, how was the experience proceeding to checkout?" },
+      { "role": "agent", "text": "I clicked 'Proceed to Cart,' but then a login popup appeared, asking me to enter my phone number. That's where I faced another issue." },
+      { "role": "interviewer", "text": "What issue did you face with the login popup?" },
+      { "role": "agent", "text": "There was no visible way to close it. I tried clicking outside the popup, but it didn't go away. I also looked for a close ('X') button, but there wasn't one. It felt like I was stuck unless I logged in." },
+      { "role": "interviewer", "text": "How did that impact your overall experience?" },
+      { "role": "agent", "text": "It was frustrating. I wasn't ready to log in yet, but I had no option to exit the popup. It made me feel forced into the process rather than having control over my shopping experience." },
+      { "role": "interviewer", "text": "If you could change one thing about this experience, what would it be?" },
+      { "role": "agent", "text": "I'd make the cart process clearer—fix the search bar glitches, improve the add-to-cart experience, and definitely add an easy way to close the login popup." },
+      { "role": "interviewer", "text": "Thank you for sharing your insights. Your feedback is really valuable." },
+      { "role": "agent", "text": "You're welcome! I hope this helps improve the experience." }
     ]
   });
 
   // Now the useEffect can access agentFeedback
   useEffect(() => {
-    setStepWork([
-      `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
-      `All ${numAgents} agents are performing tasks, recording screens, and logging interactions...`,
-      `Surveying all ${numAgents} UserAgents to gather feedback...<br /><br />` +
-      `Here's what they said:<br /><br />` +
-      Object.entries(agentFeedback).map(([agent, conversation]) => 
-        `${agent}: "${conversation[1].text}"`
-      ).join('<br /><br />'),
-      'Generating actionable insights from the study, analyzing patterns and anomalies...',
-      'Study completed! All data processed and insights ready for review.',
-    ]);
-  }, [numAgents, agentFeedback]);
+    const generateSummaries = async () => {
+      try {
+        const summaries = await Promise.all(
+          Object.entries(agentFeedback).map(async ([agent, conversation]) => {
+            const conversationText = conversation
+              .map(msg => `${msg.role}: ${msg.text}`)
+              .join('\n');
+            
+            const prompt = `Summarize this UX feedback conversation in 50 words or less:\n\n${conversationText}`;
+            const summary = await callGeminiAPI(prompt);
+            
+            return `${agent}: "${summary.trim()}"`;
+          })
+        );
+
+        setStepWork([
+          `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
+          `All ${numAgents} agents are performing tasks, recording screens, and logging interactions...`,
+          `Surveying ${numAgents} UserAgents to gather feedback...<br /><br />` +
+          `Here's what they said:<br /><br />` +
+          summaries.join('<br /><br />'),
+          'Generating actionable insights from the study, analyzing patterns and anomalies...',
+          'Study completed! All data processed and insights ready for review.',
+        ]);
+      } catch (error) {
+        console.error('Error generating summaries:', error);
+        // Fallback to showing first response if API fails
+        setStepWork([
+          `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
+          `All ${numAgents} agents are performing tasks, recording screens, and logging interactions...`,
+          `Surveying ${numAgents} UserAgents to gather feedback...`,
+          'Generating actionable insights from the study, analyzing patterns and anomalies...',
+          'Study completed! All data processed and insights ready for review.',
+        ]);
+      }
+    };
+
+    generateSummaries();
+  }, [numAgents, agentFeedback, callGeminiAPI]);
 
   const handleStartStudy = (e) => {
     e.preventDefault();
@@ -163,7 +206,8 @@ function App() {
                 ).join('\n\n');
 
               const prompt = `As a UX expert, analyze this user feedback and provide key insights in 100 words:\n\n${feedbackSummary}`;
-              const response = await callGeminiAPI(prompt);
+              // const response = await callGeminiAPI(prompt);
+              const response = INSIGHT
               // Update stepWork using setState
               setStepWork(prev => {
                 const newStepWork = [...prev];
