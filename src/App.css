@@ -1,3 +1,4 @@
+/* App.css */
 /* Global Reset & Font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -152,11 +153,37 @@ body {
 .stepper-container {
   width: 100%;
 }
+.stepper-columns {
+  display: flex;
+  gap: 1rem;
+}
+.stepper-left-column {
+  flex: 0 0 40%; /* Fixed width for the left column */
+  display: flex;
+  flex-direction: column;
+}
+.stepper-right-column {
+  flex: 1; /* Takes remaining space */
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 200px; /* Ensure it has a minimum height */
+}
 .stepper-step {
   display: flex;
   align-items: flex-start;
   position: relative;
   padding: 0.75rem 0;
+  cursor: pointer; /* Make steps clickable */
+  transition: background 0.2s ease;
+}
+.stepper-step:hover {
+  background: #e5e7eb;
+  border-radius: 8px;
+}
+.stepper-step.selected {
+  background: #d1d5db;
+  border-radius: 8px;
 }
 .stepper-icon {
   width: 36px;
@@ -174,22 +201,25 @@ body {
 .stepper-content {
   margin-left: 1rem;
   flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
 }
 .stepper-label {
   font-weight: 500;
   color: #6b7280;
-  width: 30%;
-  min-width: 150px;
+}
+.stepper-work-container {
+  max-height: 200px; /* Fixed height for the work area */
+  overflow-y: auto; /* Make the work area scrollable */
+}
+.stepper-work-container h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2a44;
+  margin-bottom: 0.5rem;
 }
 .stepper-work {
   font-size: 0.9rem;
   color: #4b5563;
-  margin-top: 0.25rem;
   line-height: 1.4;
-  width: 70%;
 }
 .stepper-step.active .stepper-icon {
   background: #4f46e5;

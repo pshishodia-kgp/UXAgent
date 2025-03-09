@@ -1,29 +1,49 @@
+// App.js
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function VerticalStepper({ steps, currentStep, stepWork }) {
+  const [selectedStep, setSelectedStep] = useState(null); // State to track the clicked step
+
   return (
     <div className="stepper-container">
-      {steps.map((step, index) => (
-        <div
-          className={`stepper-step ${index <= currentStep ? 'active' : ''}`}
-          key={index}
-        >
-          <div className="stepper-icon">{index + 1}</div>
-          <div className="stepper-content">
-            <div className="stepper-label">{step}</div>
-            <div className="stepper-work">{stepWork[index]}</div>
-            {index === currentStep && (
-              <div className="stepper-progress-bar">
-                <div className="stepper-progress-fill"></div>
+      <div className="stepper-columns">
+        {/* Left Column: Step Names */}
+        <div className="stepper-left-column">
+          {steps.map((step, index) => (
+            <div
+              className={`stepper-step ${index <= currentStep ? 'active' : ''} ${
+                selectedStep === index ? 'selected' : ''
+              }`}
+              key={index}
+              onClick={() => setSelectedStep(index)} // Set the selected step on click
+            >
+              <div className="stepper-icon">{index + 1}</div>
+              <div className="stepper-content">
+                <div className="stepper-label">{step}</div>
+                {index === currentStep && (
+                  <div className="stepper-progress-bar">
+                    <div className="stepper-progress-fill"></div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          {index < steps.length - 1 && (
-            <div className={`stepper-line ${index < currentStep ? 'active-line' : ''}`}></div>
+              {index < steps.length - 1 && (
+                <div className={`stepper-line ${index < currentStep ? 'active-line' : ''}`}></div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Right Column: Scrollable Work Area */}
+        <div className="stepper-right-column">
+          {selectedStep !== null && (
+            <div className="stepper-work-container">
+              <h4>{steps[selectedStep]}</h4>
+              <div className="stepper-work">{stepWork[selectedStep]}</div>
+            </div>
           )}
         </div>
-      ))}
+      </div>
     </div>
   );
 }
