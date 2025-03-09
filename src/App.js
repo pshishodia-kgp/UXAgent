@@ -36,11 +36,18 @@ function VerticalStepper({ steps, currentStep, stepWork }) {
 
         {/* Right Column: Scrollable Work Area */}
         <div className="stepper-right-column">
-          {selectedStep !== null && (
+          {selectedStep !== null ? (
             <div className="stepper-work-container">
               <h4>{steps[selectedStep]}</h4>
               <div className="stepper-work">{stepWork[selectedStep]}</div>
             </div>
+          ) : (
+            currentStep >= 0 && (
+              <div className="stepper-work-container">
+                <h4>{steps[currentStep]}</h4>
+                <div className="stepper-work">{stepWork[currentStep]}</div>
+              </div>
+            )
           )}
         </div>
       </div>
@@ -135,46 +142,47 @@ function App() {
     setMessages([firstAgentMsg]);
   };
 
+  //   TODO(pshishodia): May not be needed since the work is already shown on the right side. 
   useEffect(() => {
     if (studyStarted && currentStep >= 0 && currentStep < progressSteps.length - 1) {
       const timer = setTimeout(async () => {
         setCurrentStep((prev) => prev + 1);
         
-        switch (currentStep) {
-          case 0:
-            addAgentMessage(`I'm creating ${numAgents} diverse UXUser agents now...`);
-            break;
-          case 1:
-            addAgentMessage(`All ${numAgents} agents are performing the tasks. Screen recordings are in progress...`);
-            break;
-          case 2:
-            // Enhanced survey message with actual feedback
-            addAgentMessage(
-              `Surveying all ${numAgents} UserAgents to gather feedback...\n\n` +
-              `Here's what they said:\n\n` +
-              Object.entries(agentFeedback).map(([agent, conversation]) => 
-                `${agent}: "${conversation[1].text}"`
-              ).join('\n\n')
-            );
-            break;
-          case 3:
-            try {
-              const feedbackSummary = Object.entries(agentFeedback)
-                .map(([agent, conversation]) => 
-                  `${agent}'s feedback:\n${conversation.map(msg => `${msg.role}: ${msg.text}`).join('\n')}`
-                ).join('\n\n');
+    //     switch (currentStep) {
+    //       case 0:
+    //         addAgentMessage(`I'm creating ${numAgents} diverse UXUser agents now...`);
+    //         break;
+    //       case 1:
+    //         addAgentMessage(`All ${numAgents} agents are performing the tasks. Screen recordings are in progress...`);
+    //         break;
+    //       case 2:
+    //         // Enhanced survey message with actual feedback
+    //         addAgentMessage(
+    //           `Surveying all ${numAgents} UserAgents to gather feedback...\n\n` +
+    //           `Here's what they said:\n\n` +
+    //           Object.entries(agentFeedback).map(([agent, conversation]) => 
+    //             `${agent}: "${conversation[1].text}"`
+    //           ).join('\n\n')
+    //         );
+    //         break;
+    //       case 3:
+    //         try {
+    //           const feedbackSummary = Object.entries(agentFeedback)
+    //             .map(([agent, conversation]) => 
+    //               `${agent}'s feedback:\n${conversation.map(msg => `${msg.role}: ${msg.text}`).join('\n')}`
+    //             ).join('\n\n');
 
-              const prompt = `As a UX expert, analyze this user feedback and provide key insights:\n\n${feedbackSummary}`;
-              const response = await callGeminiAPI(prompt);
-              addAgentMessage(response);
-            } catch (error) {
-              console.error('Error generating insights:', error);
-              addAgentMessage('Sorry, I encountered an error while generating insights. Please try again.');
-            }
-            break;
-          default:
-            break;
-        }
+    //           const prompt = `As a UX expert, analyze this user feedback and provide key insights:\n\n${feedbackSummary}`;
+    //           const response = await callGeminiAPI(prompt);
+    //           addAgentMessage(response);
+    //         } catch (error) {
+    //           console.error('Error generating insights:', error);
+    //           addAgentMessage('Sorry, I encountered an error while generating insights. Please try again.');
+    //         }
+    //         break;
+    //       default:
+    //         break;
+    //     }
       }, 2000);
       return () => clearTimeout(timer);
     }
