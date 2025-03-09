@@ -39,7 +39,9 @@ function VerticalStepper({ steps, currentStep, stepWork }) {
           {selectedStep !== null && (
             <div className="stepper-work-container">
               <h4>{steps[selectedStep]}</h4>
-              <div className="stepper-work">{stepWork[selectedStep]}</div>
+              <div className="stepper-work" 
+                dangerouslySetInnerHTML={{ __html: stepWork[selectedStep] }}>
+              </div>
             </div>
           )}
         </div>
@@ -116,11 +118,11 @@ function App() {
   const stepWork = [
     `Creating ${numAgents} diverse UXUser agents with detailed profiles and behaviors...`,
     `All ${numAgents} agents are performing tasks, recording screens, and logging interactions...`,
-    `Surveying all ${numAgents} UserAgents to gather feedback...\n\n` +
-    `Here's what they said:\n\n` +
+    `Surveying all ${numAgents} UserAgents to gather feedback...<br /><br />` +
+    `Here's what they said:<br /><br />` +
     Object.entries(agentFeedback).map(([agent, conversation]) => 
       `${agent}: "${conversation[1].text}"`
-    ).join('\n\n'),
+    ).join('<br /><br />'),
     'Generating actionable insights from the study, analyzing patterns and anomalies...',
     'Study completed! All data processed and insights ready for review.',
   ];
